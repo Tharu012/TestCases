@@ -66,7 +66,7 @@ const TEST_DATA = {
             tcId: 'Pos_Fun_0006',
             name: 'Compound sentence',
             input: 'mama panthi yanavaa, haebaeyi enna tikak parakku veyi.',
-            expected: 'මම පන්තිය යනවා, හෙබැයි එන්න ටිකක් පරක්කු වෙයි.',
+            expected: 'මම පන්ති යනවා, හැබැයි එන්න ටිකක් පරක්කු වෙයි.',
             category: 'Daily language usage',
             grammar: 'Compound sentence',
             length: 'M'
@@ -138,8 +138,8 @@ const TEST_DATA = {
         {
             tcId: 'Pos_Fun_0014',
             name: 'Date format preservation',
-            input: '2026-05-21 mama gedhara enavaa.',
-            expected: '2026-05-21 මම ගෙදර එනවා',
+            input: '2026/05/21 mama gedhara enavaa.',
+            expected: '2026/05/21 මම ගෙදර එනවා.',
             category: 'Punctuation / numbers',
             grammar: 'Simple sentence',
             length: 'S'
