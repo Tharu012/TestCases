@@ -331,13 +331,18 @@ const TEST_DATA = {
       },
     ],
 
-    ui: {
-      tcId: 'UI_001',
-      name: 'UI Functionality Test - Partial Input Handling',
-      input: 'oba kohomada innawada?',
-      partialInput: 'oba kohomada ',
-      expectedFull: 'ඔබ කොහොමද ඉන්නවද?'
-    }
+    ui: [
+      
+      {
+        tcId: 'Neg_UI_0001',
+        name: 'Output not updating until typing is finished',
+        input: 'mama gedhara yanavaa',
+        partialInput: 'mama',
+        expectedPartial: 'මම',
+        wrongBehavior: 'Output stays empty until full sentence is typed'
+      },
+
+    ],
 };
 
 // Helper Functions
@@ -437,35 +442,55 @@ test.describe('SwiftTranslator - Singlish to Sinhala Conversion Tests', () => {
   });
 
   // UI Test
-  test.describe('UI Functionality Tests', () => {
-    test(`${TEST_DATA.ui.tcId} - ${TEST_DATA.ui.name}`, async ({ page }) => {
+test.describe('UI Functionality Tests', () => {
+
+  TEST_DATA.ui.forEach((data) => {
+
+    test(`${data.tcId} - ${data.name}`, async ({ page }) => {
+
       const translator = new TranslatorPage(page);
+
       const input = await translator.getInputField();
       const output = await translator.getOutputField();
 
       await translator.clearAndWait();
-      
-      // Type partial input
-      await input.pressSequentially(TEST_DATA.ui.partialInput, { delay: 150 });
-      
-      // Wait for partial output
-      await page.waitForTimeout(1500);
-      
-      // Verify partial translation appears
-      let outputText = await output.textContent();
-      expect(outputText.trim().length).toBeGreaterThan(0);
-      
-      // Complete typing
-      await input.pressSequentially(TEST_DATA.ui.input.substring(TEST_DATA.ui.partialInput.length), { delay: 150 });
-      
-      // Wait for full translation
-      await translator.waitForOutput();
-      
-      // Verify full translation
-      outputText = await translator.getOutputText();
-      expect(outputText).toBe(TEST_DATA.ui.expectedFull);
-      
-      await page.waitForTimeout(CONFIG.timeouts.betweenTests);
+
+
+      if (data.action === 'clickClear') {
+
+        // 1. type something first
+        await input.fill(data.input);
+
+        // 2. wait until translation appears
+        await translator.waitForOutput();
+
+        // 3. click clear
+        await translator.clear();
+
+        // 4. verify empty
+        await expect(input).toHaveValue(data.expectedInputAfterClear);
+        await expect(output).toHaveText(data.expectedOutputAfterClear);
+
+        return; // stop here
+      }
+
+
+      /* ===============================
+         ✅ PARTIAL TYPING TEST
+      =============================== */
+
+      // type partial
+      await input.pressSequentially(data.partialInput, { delay: 150 });
+
+      // verify partial translation
+      await expect(output).toHaveText(data.expectedPartial);
+
     });
+
   });
+
 });
+
+
+});
+
